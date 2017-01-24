@@ -1,0 +1,59 @@
+		
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./three.js"></script>
+
+
+<script type="x-shader/x-vertex" id="vertexShader">
+
+varying vec3 R;
+uniform vec3 camPos;
+
+void main()
+{
+
+  vec4 mvPosition = modelViewMatrix * vec4(position.xyz, 1.0);
+  gl_Position = projectionMatrix * mvPosition;
+  
+  //reflection code starts here
+  //use equation: R = -2(eye * N)N + eye
+  
+  vec4 mPosition = modelMatrix * vec4(position.xyz, 1.0);
+  vec3 eye = normalize(mPosition.xyz - camPos); //eye vector with respect to the COP
+  
+  //Reflection direction is computed using the normal vector before the camera transformation as follows, 
+  //but after the model transformation: 
+  vec3 vWorldNormal = normalize( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal );
+  
+  float dEye = dot(eye, vWorldNormal); //the dot product between the eye vector and the normal vector
+  R = -2.0 * dEye * vWorldNormal + eye;
+  
+
+}
+</script>
+
+
+<script type="x-shader/x-fragment" id="fragmentShader">
+
+uniform samplerCube tCube;
+
+varying vec3 R;
+
+void main( void ) {
+
+	vec3 texel = vec3(textureCube(tCube, R));
+	gl_FragColor = textureCube(tCube, R);
+
+
+}
+
+</script>
+
+</head>
+
+<body>
+    <script src="./main.js"></script>
+</body>
+</html>
