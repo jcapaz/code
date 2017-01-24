@@ -1,2 +1,2 @@
 # Code:
-This is from my coursework in Computer Graphics at Valdosta State University.
+This is from my coursework in Data Structures at Valdosta State University.
